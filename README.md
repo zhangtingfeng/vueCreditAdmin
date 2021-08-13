@@ -52,3 +52,6 @@ git push -u origin main
 …or import code from another repository
 You can initialize this repository with code from a Subversion, Mercurial, or TFS project.
 
+
+
+https://testupload.edu.eggsoft.cn/Konowledge/%E5%AD%A6%E6%B2%9F%E9%80%9A/%E6%B2%9F%E9%80%9A%E4%B9%A6%E7%B1%8D/%E6%B2%9F%E9%80%9A%E5%8A%9B-%E4%BA%BA%E9%99%85%E5%85%B3%E7%B3%BB.pdf
