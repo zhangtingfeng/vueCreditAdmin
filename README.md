@@ -38,10 +38,15 @@ Get started by creating a new file or uploading an existing file. We recommend e
 
 echo "# vueAdmin" >> README.md
 git init
+
 git add README.md
+
 git commit -m "first commit"
+
 git branch -M main
+
 git remote add origin git@github.com:zhangtingfeng/vueCreditAdmin.git
+
 git push -u origin main
 
 
