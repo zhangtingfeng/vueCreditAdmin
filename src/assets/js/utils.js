@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import router from '../../router'
-import {Message} from 'element-ui'
+import { Message } from 'element-ui'
 
 //const host = 'http://localhost:38030/jfc-shop/';
 //var host = '';
@@ -24,14 +24,27 @@ export default {
       return letpath;
     },
     requestPostUrl(data, argurl, callback) {
+      //debugger;
       var params = {};
-      params = {
+     
+
+      var Headparams = {};
+      Headparams = {
         'loginChannel': 'pc',
         'token': localStorage.getItem('vtoken'),
         'sign': 'qazwsxedc',
-        'data': data
+        'user': localStorage.getItem('user'),
+        'login_user_id': localStorage.getItem('login_user_id'),
+        'visitID':this.getVisitTimeMarker()
       }
-      /* if (data != null && data != '') {
+      params = {
+        'data': data,
+        'Headparams':Headparams
+      }
+
+      /* if (data != null && data != '') {     localStorage.setItem("user", data.account);
+          localStorage.setItem("login_user_id", data.login_user_id);
+
          for (var key in data) {
            if (data[key] == null || data[key] == undefined || (jQuery.type(data[key]) === "string" && data[key] == "")) {
 
@@ -58,6 +71,7 @@ export default {
       axios.post(url, (params),
         {
           headers: {
+            'Headparams':JSON.stringify(Headparams),
             'headRouter': argurl
           }
         }
@@ -90,11 +104,14 @@ export default {
       });
     },
     requestGetUrl(argurl, callback) {
-      var paramsdata = {};
-      paramsdata = {
+      var Headparams = {};
+      Headparams = {
         'loginChannel': 'pc',
         'token': localStorage.getItem('vtoken'),
-        'sign': 'qazwsxedc'
+        'sign': 'qazwsxedc',
+        'user': localStorage.getItem('user'),
+        'login_user_id': localStorage.getItem('login_user_id'),
+        'visitID':this.getVisitTimeMarker()
       }
 
       let url = "";
@@ -112,11 +129,12 @@ export default {
 
       //debugger;
       axios.get(url, {
-          params: paramsdata,
-          headers: {
-            'headRouter': argurl
-          }
+        
+        headers: {
+          'Headparams':JSON.stringify(Headparams),
+          'headRouter': argurl
         }
+      }
       ).then(rsp => {
 
 
@@ -179,7 +197,7 @@ export default {
       this.requestPostUrl(data, 'student-service/SysMenu/editUser', callback)
     },
     editInfo(data, callback, defaultService = 'student-service') {
-      this.requestPostUrl(data, defaultService+'/cmn/editInfo', callback)
+      this.requestPostUrl(data, defaultService + '/cmn/editInfo', callback)
     },
     editParmas(data, callback) {
       this.requestPostUrl(data, 'student-service/cmn/editParmas', callback)
@@ -199,8 +217,8 @@ export default {
     checkShopDoorPlate: function (data, callback) { // 通用 查询列表
       this.requestPostUrl(data, 'student-service/cmn/checkShopDoorPlate', callback);
     },
-    queryCmnQueryPage: function (data, callback,tService="student-service") { // 通用 查询列表
-      this.requestPostUrl(data, tService+'/cmn/queryPage', callback);
+    queryCmnQueryPage: function (data, callback, tService = "student-service") { // 通用 查询列表
+      this.requestPostUrl(data, tService + '/cmn/queryPage', callback);
     },
     queryForPage: function (data, callback) { // 通用 查询列表
       this.requestPostUrl(data, 'student-service/cmn/queryForPage', callback);
@@ -256,6 +274,19 @@ export default {
         //这个是ios操作系统
         return 'ios'
       }
+    },
+    getVisitTimeMarker() {
+      ///debugger;
+      var dateee = new Date().toJSON();
+      let Marker= new Date(+new Date(dateee) + 8 * 3600 * 1000).toISOString().replace(/:/g, '').replace(/-/g, '').replace(/T/g, '').replace(/\.[\d]{3}Z/, '')
+      var str = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+      let nnnn=12;
+      var res = "";
+      for(var i = 0; i < nnnn ; i ++) {
+          var id = Math.ceil(Math.random()*35);
+          res += str[id];
+      }
+      return Marker+res;
     }
   },
   dateTransion(date, type = 0) {
@@ -318,8 +349,7 @@ export default {
 
     return PIC_URL_PRE + "/" + data;
 
-  },
-
+  }
 
 }
 

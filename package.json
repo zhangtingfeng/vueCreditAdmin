@@ -26,6 +26,7 @@
     "vod-js-sdk-v6": "^1.4.8",
     "vue": "^2.5.2",
     "vue-i18n": "^8.0.0",
+    "vue-json-viewer": "^2.2.19",
     "vue-pdf": "^4.0.0",
     "vue-pdf-app": "^2.1.0",
     "vue-qr": "^2.2.1",

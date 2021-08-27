@@ -33,6 +33,8 @@ Vue.prototype.$echarts = echarts
 Vue.use(ElementUI)
 Vue.use(api)
 
+
+
 Vue.prototype.$axios = axios///将axios挂载在Vue实例原型上
 axios.defaults.baseURL = '/apis'  //自动附加在所有axios请求前面，则可以省略/api，直接写'/xxxx/xxx'。否则需要设置'/api/xxxx/xxx'
 // 设置axios请求的token

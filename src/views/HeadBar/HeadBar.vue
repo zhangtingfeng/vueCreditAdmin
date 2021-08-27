@@ -156,7 +156,7 @@
             }
         },
         mounted() {
-            this.sysName = "信用风险管理系统";
+            this.sysName = "信用管理";
             var user = localStorage.getItem("user");
 
             if (user) {
