@@ -15,6 +15,7 @@
         "exit": "Exit"
     },
     "action": {
+        "detail": "detail",
         "operation": "Operation",
         "add": "Add",
         "edit": "Edit",

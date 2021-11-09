@@ -123,7 +123,7 @@ export default {
         url = this.gethostPath();
       } else if (letpathNODE_ENV === 'production') {
         url = this.gethostPath();
-        paramsdata["headRouter"] = argurl;
+        //paramsdata["headRouter"] = argurl;
       }
 
 
@@ -210,6 +210,10 @@ export default {
     },
     queryDicList: function (dictype, callback) { // 通用 查询列表
       this.getRequest('student-service/getDic/dictype/' + dictype, callback);
+    },
+    querycreditwsGetList: function (credittype, callback) { // 通用 查询列表
+      //debugger;
+      this.getRequest('qichacha-service/CommonGet/creditwsGet/' +encodeURIComponent (credittype), callback);
     },
     checkShop: function (data, callback) { // 通用 查询列表
       this.requestPostUrl(data, 'student-service/cmn/checkShop', callback);

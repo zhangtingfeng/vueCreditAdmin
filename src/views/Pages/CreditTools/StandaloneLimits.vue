@@ -47,13 +47,13 @@
         <el-form-item>
           <kt-button
             icon="el-icon-s-check"
-            label="新增"
+            label="Add to new group"
             type="primary"
-            @click="addQuiz"
+            @click="addNewGroup"
           />
           <kt-button
             icon="fa fa-search"
-            label="查询"
+            label="Query"
             type="primary"
             @click="$refs.CyTable.findPageBeforeRestPages(filters)"
           />
@@ -116,28 +116,31 @@
         :columns="columns"
       ></table-column-filter-dialog>
     </div>
-    <!--表格内容栏-->
+    <!--表格内容栏          https://testupload.edu.eggsoft.cn/A2.txt  https://testupload.edu.eggsoft.cn/A2.txt-->
     <cy-table
       :max-height="1000"
       :data="pageResult"
-      :operationWidth="174"
+      :operationWidth="140"
+      :showBatchDelete=false
       :columns="filterColumns"
       @findPage="findPage"
       @selectionChange="selectionChange"
       @handleDelete="handleDelete"
+      @handleAddToExsiting="handleAddToExsiting"
       @handleEdit="handleDetail"
       ref="CyTable"
     ></cy-table>
     <!--新增编辑界面-->
     <el-dialog
-      title="Standlone Limit Detail"
+      :title="
+        operation ? 'New Standlone Limit Detail' : 'Edit Standlone Limit Detail'
+      "
       width="70%"
       :visible.sync="dialogVisible"
       :close-on-click-modal="false"
     >
       <el-form
         :model="dataForm"
-        label-width="80px"
         :rules="dataFormRules"
         ref="dataForm"
         :inline="true"
@@ -146,56 +149,47 @@
       >
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
-            <div class="editformText">Chinese Group Name</div>
-            <el-select v-model="value" placeholder="Chinese Group Name">
+          <el-col :span="11">
+            <el-form-item
+              class="editformText"
+              label="Chinese Group Name"
+              prop="chinese_group_company"
+            ></el-form-item>
+
+            <el-select
+              filterable
+              v-model="dataForm.chinese_group_company"
+              placeholder="Chinese Group Name"
+              @change="selectchangechinese_group_company"
+            >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="(item, index) in cpmappingdetailsList"
+                :key="index"
+                :label="item.chinese_group_company"
+                :value="item.chinese_group_company"
               >
               </el-option>
             </el-select>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
-            <div class="editformText">SRD Group Name</div>
-            <el-select v-model="value" placeholder="SRD Group Name">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-col>
-        </el-row>
+          <el-col :span="11" style="margin-left: 4%">
+            <el-form-item
+              class="editformText"
+              label="SRD Group Name"
+              prop="srd_group_company"
+            ></el-form-item>
 
-        <!--one                         line  -->
-        <el-row>
-          <el-col span="11">
-            <div class="editformText">Chinese Counterparty Name</div>
-            <el-select v-model="value" placeholder="Chinese Counterparty Name">
+            <el-select
+              filterable
+              v-model="dataForm.srd_group_company"
+              placeholder="SRD Group Name"
+              @change="selectchangesrd_group_company"
+            >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-          </el-col>
-
-          <el-col span="11" style="margin-left: 4%">
-            <div class="editformText">SRD Counterparty Name</div>
-            <el-select v-model="value" placeholder="SRD Counterparty Name">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="(item, index) in cpmappingdetailsList"
+                :key="index"
+                :label="item.srd_counterparty_name"
+                :value="item.srd_counterparty_name"
               >
               </el-option>
             </el-select>
@@ -204,195 +198,360 @@
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
+            <el-form-item
+              class="editformText"
+              label="Chinese Counterparty Name"
+              prop="chinese_counterparty_name"
+            ></el-form-item>
+
+            <el-select
+              filterable
+              v-model="dataForm.chinese_counterparty_name"
+              placeholder="Chinese Counterparty Name"
+              @change="selectchangechinese_counterparty_name"
+            >
+              <el-option
+                v-for="(item, index) in cpmappingdetailsList"
+                :key="index"
+                :label="item.chinese_group_company"
+                :value="item.chinese_group_company"
+              >
+              </el-option>
+            </el-select>
+          </el-col>
+
+          <el-col :span="11" style="margin-left: 4%">
+            <el-form-item
+              class="editformText"
+              label="SRD Counterparty Name"
+              prop="srd_counterparty_name"
+            ></el-form-item>
+
+            <el-select
+              filterable
+              v-model="dataForm.srd_counterparty_name"
+              placeholder="SRD Counterparty Name"
+              @change="selectchangesrd_counterparty_name"
+            >
+              <el-option
+                v-for="(item, index) in cpmappingdetailsList"
+                :key="index"
+                :label="item.srd_counterparty_name"
+                :value="item.srd_counterparty_name"
+              >
+              </el-option>
+            </el-select>
+          </el-col>
+        </el-row>
+
+        <!--one                         line  -->
+        <el-row>
+          <el-col :span="11">
             <div class="editformText">Level</div>
-            <el-select v-model="value" placeholder="Level">
+            <el-select
+              filterable
+              v-model="dataForm.cr_level"
+              placeholder="Level"
+            >
               <el-option label="Group" value="Group"></el-option>
               <el-option label="Sub" value="Sub"></el-option>
             </el-select>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">TRR</div>
-            <el-input v-model="value" placeholder="TRR"> </el-input>
+            <el-input v-model="dataForm.trr" placeholder="TRR"> </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">TotalLimit</div>
-            <el-input v-model="value" placeholder="TotalLimit"> </el-input>
+            <el-input
+              v-model="dataForm.total_limit"
+              placeholder="TotalLimit"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
+            </el-input>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">Total Limit Balance (USD)</div>
-            <el-input v-model="value" placeholder="Total Limit Balance (USD)">
+            <el-input
+              v-model="dataForm_AutoCount.total_limit_Balance"
+              placeholder="Total Limit Balance (USD)"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
             </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Open Account (USD)</div>
-            <el-input v-model="value" placeholder="Open Account (USD)">
+            <el-input
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              v-model="dataForm.open_account"
+              placeholder="Open Account (USD)"
+            >
             </el-input>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">Open Account Balance (USD)</div>
-            <el-input v-model="value" placeholder="Open Account Balance (USD)">
+            <el-input
+              v-model="dataForm_AutoCount.open_account_Balance"
+              placeholder="Open Account Balance (USD)"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
             </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">OA Tenor</div>
-            <el-input v-model="value" placeholder="OA Tenor"> </el-input>
+            <el-input
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              v-model="dataForm.oa_tenor"
+              placeholder="OA Tenor"
+            >
+            </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Prepayment (USD)</div>
-            <el-input v-model="value" placeholder="Prepayment (USD)">
+            <el-input
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              v-model="dataForm.prepayment"
+              placeholder="Prepayment (USD)"
+            >
             </el-input>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">Prepayment Balance (USD)</div>
-            <el-input v-model="value" placeholder="Prepayment Balance (USD)">
+            <el-input
+              v-model="dataForm_AutoCount.prepayment_Balance"
+              placeholder="Prepayment Balance (USD)"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
             </el-input>
           </el-col> </el-row
         ><!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Prepayment Tenor</div>
-            <el-input v-model="value" placeholder="Prepayment Tenor">
+            <el-input
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              v-model="dataForm.prepayment_tenor"
+              placeholder="Prepayment Tenor"
+            >
             </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Performance Deposit (USD)</div>
-            <el-input v-model="value" placeholder="Performance Deposit (USD)">
+            <el-input
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              v-model="dataForm.performance_deposit"
+              placeholder="Performance Deposit (USD)"
+            >
             </el-input>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
-            <div class="editformText">Performance Deposit (USD)</div>
-            <el-input v-model="value" placeholder="Performance Deposit (USD)">
+          <el-col :span="11" style="margin-left: 4%">
+            <div class="editformText">Performance Deposit Balance (USD)</div>
+            <el-input
+              v-model="dataForm_AutoCount.performance_deposit_Balance"
+              placeholder="Performance Deposit Balance (USD)"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
             </el-input>
           </el-col> </el-row
         ><!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Performance Deposit Tenor</div>
-            <el-input v-model="value" placeholder="Performance Deposit Tenor">
+            <el-input
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              v-model="dataForm.performance_deposit_tenor"
+              placeholder="Performance Deposit Tenor"
+            >
             </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">FPMTM (USD)</div>
-            <el-input v-model="value" placeholder="FPMTM (USD)"> </el-input>
+            <el-input
+              v-model="dataForm.fpmtm"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+              placeholder="FPMTM (USD)"
+            >
+            </el-input>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">FPMTM Balance (USD)</div>
-            <el-input v-model="value" placeholder="FPMTM Balance (USD)">
+            <el-input
+              v-model="dataForm_AutoCount.fpmtm_Balance"
+              placeholder="FPMTM Balance (USD)"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
             </el-input>
           </el-col> </el-row
         ><!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">FPMTM Tenor</div>
-            <el-input v-model="value" placeholder="FPMTM Tenor"> </el-input>
+            <el-input
+              
+              v-model="dataForm.fpmtm_tenor"
+              placeholder="FPMTM Tenor"
+              @focus="provingFormatFocus"
+              @blur="provingFormatBlur"
+            >
+            </el-input>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Expiry Date</div>
-            <el-input v-model="value" placeholder="Expiry Date"> </el-input>
+            <!--            <el-input v-model="dataForm.expiry_date" placeholder="Expiry Date">
+              
+            </el-input>-->
+
+            <el-date-picker
+              v-model="dataForm.expiry_date"
+              type="date"
+              placeholder="Expiry Date"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">Expried</div>
-            <el-input v-model="value" placeholder="Expried"> </el-input>
+            <el-input
+              v-model="dataForm_AutoCount.Expried"
+              placeholder="Expried"
+              :disabled="dataForm_AutoCount.disableExpried"
+            >
+            </el-input>
           </el-col> </el-row
         ><!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Credit Status</div>
-            <el-select v-model="value" placeholder="Credit Status">
+            <el-select
+              filterable
+              v-model="dataForm.credit_status"
+              placeholder="Credit Status"
+            >
               <el-option label="Active" value="Active"></el-option>
               <el-option label="Inactive" value="Inactive"></el-option>
               <el-option label="Suspended" value="Suspended"></el-option>
             </el-select>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">Regular</div>
-            <el-select v-model="value" placeholder="Regular">
+            <el-select
+              filterable
+              v-model="dataForm.regular"
+              placeholder="Regular"
+            >
               <el-option label="Regular" value="Regular"></el-option>
               <el-option label="Irregular" value="Irregular"></el-option>
             </el-select>
           </el-col> </el-row
         ><!--one                         line  -->
         <el-row>
-          <el-col span="11">
+          <el-col :span="11">
             <div class="editformText">Overdue</div>
-            <el-select v-model="value" placeholder="Overdue">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
+            <el-select
+              filterable
+              v-model="dataForm_AutoCount.Overdue"
+              placeholder="Overdue"
+              :disabled="dataForm_AutoCount.disableOverdue"
+            >
+              <el-option label="Y" value="Y"></el-option>
+              <el-option label="N" value="N"></el-option>
             </el-select>
           </el-col>
 
-          <el-col span="11" style="margin-left: 4%">
+          <el-col :span="11" style="margin-left: 4%">
             <div class="editformText">Limit Excess</div>
-            <el-select v-model="value" placeholder="Limit Excess">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
+            <el-select
+              filterable
+              v-model="dataForm_AutoCount.Limit_Excess"
+              placeholder="Limit Excess"
+              :disabled="dataForm_AutoCount.disableLimitExcess"
+            >
+              <el-option label="Y" value="Y"></el-option>
+              <el-option label="N" value="N"></el-option>
             </el-select>
           </el-col> </el-row
         ><!--one                         line  -->
         <el-row>
-          <el-col span="11">
-            <div class="editformText">Product</div>
+          <el-col :span="11">
+            <el-form-item
+              class="editformText"
+              label="Product"
+              prop="product"
+            ></el-form-item>
+
+            <el-select
+              filterable
+              v-model="dataForm.product"
+              placeholder="Limit Excess"
+            >
               <el-option label="All" value="All"></el-option>
               <el-option label="Coal" value="Coal"></el-option>
               <el-option label="Concs" value="Concs"></el-option>
               <el-option label="Ferrous" value="Ferrous"></el-option>
               <el-option label="Refined" value="Refined"></el-option>
               <el-option label="Others" value="Others"></el-option>
+            </el-select>
           </el-col>
         </el-row>
 
         <!--one                         line  -->
         <el-row>
-          <el-col span="23">
-            <div class="editformText">Comment</div>
-            <el-input placeholder="Comment"></el-input>
+          <el-col :span="23">
+            <el-form-item class="editformText" label="comments" prop="comments">
+            </el-form-item>
+            <el-input
+              v-model="dataForm.comments"
+              placeholder="Comment"
+            ></el-input>
           </el-col>
         </el-row>
       </el-form>
@@ -426,48 +585,6 @@
         </div>
       </div>
     </el-dialog>
-
-    <el-upload
-      :action="imgUpload"
-      :on-success="handleSuccess"
-      :show-file-list="false"
-      accept="image/gif, image/jpeg, image/jpg, image/png, image/svg"
-      :max-size="2048"
-    >
-      <el-button
-        v-show="false"
-        size="small"
-        type="primary"
-        id="uploadButton"
-      ></el-button>
-    </el-upload>
-
-    <el-dialog :visible.sync="dialogVisibleReviw" title="审核" width="30%">
-      <el-form
-        :model="dataStatusForm"
-        label-width="120px"
-        ref="dataStatusForm"
-        label-position="right"
-        inline
-      >
-        <el-row>
-          <el-form-item label="请选择" prop="status">
-            <el-select v-model="dataStatusForm.status" style="width: 300px">
-              <el-option
-                v-for="item in Roptions"
-                :key="item.key"
-                :label="item.value"
-                :value="item.key"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer" style="text-align: center">
-        <el-button type="primary" @click.native="submitStatus">提交</el-button>
-        <el-button @click="dialogVisibleReviw = false">取 消</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -478,7 +595,7 @@ import TreeSelect from "@riophae/vue-treeselect";
 import KtButton from "@/views/Core/KtButton";
 import TableColumnFilterDialog from "@/views/Core/TableColumnFilterDialog";
 import { format, formatDate, ThousandFilterZero } from "@/utils/datetime";
-import CyTable from "@/views/Core/CyTable";
+import CyTable from "@/views/Core/CyTableExample";
 import ImgUpload from "@/views/Core/ImgUpload";
 import { exportExcel } from "@/utils/excel";
 
@@ -496,38 +613,31 @@ export default {
     return {
       options: [
         {
-          value: "Chinese Group Name",
-          label: "Chinese Group Name",
+          value: "Chinese Group Name1",
+          label: "Chinese Group Name1",
         },
         {
-          value: "Chinese Group Name",
-          label: "Chinese Group Name",
+          value: "Chinese Group Name2",
+          label: "Chinese Group Name3",
         },
         {
-          value: "Chinese Group Name",
-          label: "Chinese Group Name",
+          value: "Chinese Group Name3",
+          label: "Chinese Group Name3",
         },
         {
-          value: "Chinese Group Name",
-          label: "Chinese Group Name",
+          value: "Chinese Group Name4",
+          label: "Chinese Group Name5",
         },
         {
-          value: "Chinese Group Name",
-          label: "Chinese Group Name",
+          value: "Chinese Group Name5",
+          label: "Chinese Group Name5",
         },
       ],
       value: "",
       dataStatusForm: {},
       dialogVisibleReviw: false,
-      statusOptions: [
-        { key: "0", value: "审核中" },
-        { key: "1", value: "审核通过" },
-        { key: "2", value: "审核失败" },
-      ],
-      Roptions: [
-        { key: 1, value: "审核通过" },
-        { key: 2, value: "审核不通过" },
-      ],
+
+      cpmappingdetailsList: [],
       //  imgsList: [],
       picList: [],
       imageSizeLimit: 10, //图片上传个数控制
@@ -542,29 +652,65 @@ export default {
       filters: {
         serviceURL:
           "qichacha-service/CreditLimit_StandaloneLimitsView/queryList",
+        serviceAddURL: "qichacha-service/CreditLimit_StandaloneLimitsView/add",
+        serviceDeleteURL:
+          "qichacha-service/CreditLimit_StandaloneLimitsView/delete",
       },
       dataForm: {
-        id: "",
-        Title: "",
-        quizMemo: "",
-        InvestMemo: "",
-        Type_TestOrLearing: "",
-        Picture: "",
-        ReportNeedMoney: "",
-        TestNeedMoney: "",
-        quizStatus: "",
+        cr_level: "Group",
+        trr: null,
+        total_limit: "0",
+        open_account: "0",
+        oa_tenor: "0",
+        prepayment: "0",
+        prepayment_tenor: "0",
+        performance_deposit: "0",
+        performance_deposit_tenor: "0",
+        fpmtm: "0",
+        fpmtm_tenor: "0",
+        expiry_date: formatDate(new Date(), "yyyy-MM-dd"),
+        credit_status: "Active",
+        product: "ALL",
+        comments: null,
+        chinese_counterparty_name: null,
+        srd_counterparty_name: null,
+        chinese_group_company: null,
+        srd_group_company: null,
+      },
+      dataForm_AutoCount: {
+        disableOverdue: false,
+        disableLimitExcess: false,
+        disableExpried: false,
       },
       dataFormRules: {
-        Title: [{ required: true, message: "请输入方案名称", trigger: "blur" }],
-
-        quizStatus: [
+        chinese_counterparty_name: [
           {
             required: true,
-            message: "请选择方案状态,处于停用状态还是使用状态",
+            message: "please input chinese counterparty name",
             trigger: "change",
           },
         ],
-        Picture: [{ required: true, message: "请上传主图", trigger: "blur" }],
+        srd_counterparty_name: [
+          {
+            required: true,
+            message: "please input srd counterparty name",
+            trigger: "change",
+          },
+        ],
+        chinese_group_company: [
+          {
+            required: true,
+            message: "please input chinese group company",
+            trigger: "change",
+          },
+        ],
+        srd_group_company: [
+          {
+            required: true,
+            message: "please input srd group company",
+            trigger: "change",
+          },
+        ],
       },
       columns: [],
       filterColumns: [],
@@ -626,6 +772,70 @@ export default {
     },
   },
   methods: {
+    provingFormatShow______(str) {
+      //debugger;
+      var this_ = this;
+      this_.dataForm[str] = this_.dataForm[str].replace(/,/g, ""); //取消字符串中出现的所有逗号
+      //e = str.replace(/,/g, "");//取消字符串中出现的所有逗号
+    },
+    provingFormatBlur(e) {
+      debugger;
+      e.target.value = e.target.value.replace(/[^\.\d]/g, "");
+      // this.dataForm.trr = this.dataForm.trr.replace(".", "");
+      e.target.value = ThousandFilterZero(e.target.value, 2, ".", ",");
+    },
+
+    provingFormatFocus(e) {
+      debugger;
+      e.target.value = e.target.value.replace(/[^\.\d]/g, "");
+      // this.dataForm.trr = this.dataForm.trr.replace(".", "");
+      //e.target.value = ss1.replace('$','').replace('￥','').replace('，','').replace(/,/g,'');
+    },
+
+    provingFormatShow(e) {
+      debugger;
+      e.target.value = e.target.value.replace(/[^\.\d]/g, "");
+      // this.dataForm.trr = this.dataForm.trr.replace(".", "");
+      e.target.value = ThousandFilterZero(e.target.value, 2, ".", ",");
+    },
+    selectchangechinese_group_company(item) {
+      // debugger;
+      let LetList = this.cpmappingdetailsList.filter(
+        (itmer) => itmer.chinese_group_company == item
+      ); //管理员
+      if (LetList.length > 0) {
+        this.dataForm.srd_group_company = LetList[0].srd_counterparty_name;
+      }
+    },
+    selectchangesrd_group_company(item) {
+      // debugger;
+      let LetList = this.cpmappingdetailsList.filter(
+        (itmer) => itmer.srd_counterparty_name == item
+      ); //管理员
+      if (LetList.length > 0) {
+        this.dataForm.chinese_group_company = LetList[0].srd_counterparty_name;
+      }
+    },
+    selectchangechinese_counterparty_name(item) {
+      // debugger;
+      let LetList = this.cpmappingdetailsList.filter(
+        (itmer) => itmer.chinese_group_company == item
+      ); //管理员
+      if (LetList.length > 0) {
+        this.dataForm.srd_counterparty_name = LetList[0].srd_counterparty_name;
+      }
+    },
+    selectchangesrd_counterparty_name(item) {
+      //debugger;
+      let LetList = this.cpmappingdetailsList.filter(
+        (itmer) => itmer.srd_counterparty_name == item
+      ); //管理员
+      if (LetList.length > 0) {
+        this.dataForm.chinese_counterparty_name =
+          LetList[0].chinese_group_company;
+      }
+    },
+
     handleSuccess(res) {
       // 获取富文本组件实例
       //debugger;
@@ -695,68 +905,86 @@ export default {
       this.picList = [];
       // this.imgsList = [];
     },
-    addQuiz: function (params) {
+    addNewGroup: function (params) {
       let this_ = this;
       this.dialogVisible = true;
-      this.operation = false;
+      this.operation = true;
       if (this.$refs["dataForm"]) {
         this.$refs["dataForm"].resetFields();
       }
-      this.dataForm.status = 0;
-      /*
+      this_.dataForm_AutoCount.disableOverdue = true;
+      this_.dataForm_AutoCount.disableLimitExcess = true;
+      this_.dataForm_AutoCount.disableExpried = true;
+      /*this.dataForm.status = 0;
       if (this.login_shop_id) {
         this.dataForm.shop_id = this.login_shop_id;
       }
       this.dataForm.parentName = "";
 */
-      this.picList = [];
+      //  this.picList = [];
       // this.imgsList = [];
     },
     // 显示编辑界面
     handleDetail: function (params) {
       //debugger;
       this.dialogVisible = true;
-      this.operation = false;
+      this.operation = true;
       this.$nextTick(() => {
         let this_ = this;
         params.row.parentName = params.row.type;
         this.dataForm = Object.assign({}, params.row);
-        this.picList = [];
-        // this.imgsList = [];
-
-        if (params.row.Picture) {
-          $.each(params.row.Picture.split(","), function (key, val) {
-            let param = {};
-            if (this_.utils.isNull(val)) {
-            } else {
-              param.url = val;
-              this_.picList.push(param);
-            }
-          });
-        }
       });
     },
     //保存修改
     submitForm: function () {
       var this_ = this;
-
+      //debugger;
       this_.$refs.dataForm.validate((valid) => {
         if (valid) {
-          let params = Object.assign({}, this_.dataForm);
-          params.t = "invest_quiz3";
+          debugger;
+          let params = {};
+
+          //this_.provingFormatShow______("total_limit");
+          //this_.provingFormatShow______("open_account");
+          //this_.provingFormatShow______("oa_tenor");
+          //this_.provingFormatShow______("prepayment");
+          //this_.provingFormatShow______("prepayment_tenor");
+          //this_.provingFormatShow______("performance_deposit");
+          //this_.provingFormatShow______("performance_deposit_tenor");
+          //this_.provingFormatShow______("fpmtm");
+          //this_.provingFormatShow______("fpmtm_tenor");
+
+          //debugger;
+          let paramsdata = Object.assign({}, this_.dataForm);
+          params.data = JSON.stringify(paramsdata);
 
           // params.imgs = this.imgsList.map(item => item.url).toString();
-          params.Picture = this.picList.map((item) => item.url).toString();
-
-          if (!params.Picture) {
-            this.$message({ message: "请选择主图", type: "error" });
-            return;
-          }
-
-          params.status = "0";
 
           this_.editLoading = true;
-          this_.utils.request.editInfo(params, this_.editInfoBack);
+
+          this_.utils.request.requestPostUrl(
+            params,
+            this.filters.serviceAddURL,
+            function (res) {
+              this_.editLoading = false;
+
+              if (res.code == 200) {
+                this_.$message({ message: "success", type: "success" });
+                this_.findPage();
+                this_.dialogVisible = false;
+              } else if (res.code == 401) {
+                this_.$message({ message: "Error, " + res.msg, type: "error" });
+                /*  Message.error({
+                  //弹窗使用方法
+                  showClose: true,
+                  duration: 2000, //警告的消息3秒钟后消失
+                  message: res.msg,
+                });*/
+              }
+            }
+          );
+
+          // this_.utils.request.editInfo(params, this_.editInfoBack);
         }
       });
     },
@@ -835,12 +1063,38 @@ export default {
     // 批量删除
     handleDelete: function (data) {
       var ids = "";
+      debugger;
+      let params = {};
       for (var i = 0; i < data.params.length; i++) {
         ids = ids + data.params[i].id + ",";
       }
+      //data.t = "standalone/creditlimit/408";
+      params.ids = ids;
+      let this_ = this;
+      //this_.editLoading = true;
 
-      data.t = "invest_quiz4";
-      data.ids = ids;
+      this_.utils.request.requestPostUrl(
+        params,
+        this.filters.serviceDeleteURL,
+        function (res) {
+          this_.editLoading = false;
+
+          if (res.code == 200) {
+            this_.$message({ message: "success", type: "success" });
+            this_.findPage();
+            this_.dialogVisible = false;
+          } else if (res.code == 401) {
+            this_.$message({ message: "Error, " + res.msg, type: "error" });
+            /*  Message.error({
+                  //弹窗使用方法
+                  showClose: true,
+                  duration: 2000, //警告的消息3秒钟后消失
+                  message: res.msg,
+                });*/
+          }
+        }
+      );
+
       this.utils.request.batchDeleteInfo(data, this.deleteInfoBack);
     },
     deleteInfoBack: function () {
@@ -865,6 +1119,20 @@ export default {
         this.$refs["dataForm"].resetFields();
       }
     },
+    // 显示新增界面
+    handleAddToExsiting: function (params) {
+      debugger;
+      this.dialogVisible = true;
+      this.operation = false;
+      this.$nextTick(() => {
+        let this_ = this;
+        params.row.parentName = params.row.type;
+        let letData = Object.assign({}, params.row);
+        this_.dataForm.chinese_group_company = letData.chinese_group_company;
+        this_.dataForm.srd_group_company = letData.srd_group_company;
+      });
+    },
+
     // 处理表格列过滤显示
     handleFilterColumns: function (data) {
       this.filterColumns = data.filterColumns;
@@ -1093,30 +1361,27 @@ export default {
     beforeClose() {
       this.filelist = [];
     },
-    async findDicType() {
+    async findcreditwsGetType() {
       var this_ = this;
-
-      this.utils.request.queryDicList("trainOrtest", function (res) {
-        if ((res.code = 200)) {
-          this_.popupQuestionTypeData = res.data;
+      this.utils.request.querycreditwsGetList(
+        "counterpartymappingdetails",
+        function (res) {
+          //
+          if ((res.code = 200)) {
+            this_.cpmappingdetailsList = res.data.cpmappingdetails;
+            //Object.assign( this_.cpmappingdetailsListFull,cpmappingdetailsList);//js之数组克隆/.es6新增方法-Object.assign
+          }
+          //debugger;
+          //
         }
-        //debugger;
-        //
-      });
-
-      this.utils.request.queryDicList("quizStatusType", function (res) {
-        if ((res.code = 200)) {
-          this_.popupQuizData = res.data;
-        }
-        //debugger;
-        //
-      });
+      );
     },
     toThousandFilterZero: function (row, column, cellValue, index) {
       return ThousandFilterZero(cellValue, 2, ".", ",");
     },
     // 时间格式化
     expiry_dateFormat: function (row, column, cellValue, index) {
+      if (cellValue==undefined) return '';
       let letdate = new Date(Date.parse(cellValue.replace(/-/g, "/")));
 
       let letRetrundata = cellValue.split(" ")[0];
@@ -1138,7 +1403,7 @@ export default {
     },
   },
   async mounted() {
-    await this.findDicType();
+    await this.findcreditwsGetType();
     //debugger;
     this.initColumns();
     //this.querypageList();
@@ -1196,6 +1461,38 @@ export default {
 <style scoped>
 /deep/ .form .el-input__inner {
   width: 100%;
+}
+
+/deep/ .form .el-date-editor {
+  width: 100%;
+}
+
+/deep/ .form .editformText {
+  width: 100%;
+}
+/deep/ .form .el-form-item__error {
+  width: 400px;
+}
+
+/deep/ .form .el-form-item {
+  margin-bottom: 0px;
+}
+
+/deep/ .el-button--mini,
+.el-button--mini.is-round {
+  padding: 7px 3px;
+}
+
+/deep/ .form .el-form-item__label {
+  text-align: right;
+  vertical-align: middle;
+  float: left;
+  font-size: 12px;
+  color: #606266;
+  line-height: 14px;
+  padding: 0 12px 0 0;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 /deep/ .form .el-input__inner {

@@ -127,7 +127,7 @@ export default {
 		},
 		// 删除操作
 		delete: function (ids) {
-			this.$confirm('确认删除选中记录吗？', '提示', {
+			this.$confirm("Are you sure to delete the selected record?", "Tip", {
 				type: 'warning'
 			}).then(() => {
 				let params = []

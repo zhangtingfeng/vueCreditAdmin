@@ -73,7 +73,7 @@
           />-->
           <kt-button
             icon="fa fa-search"
-            label="查询"
+            :label="$t('action.search')"
             type="primary"
             @click="$refs.CyTable.findPageBeforeRestPages(filters)"
           />
@@ -95,7 +95,7 @@
               value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
           </el-form-item>
-          <el-form-item prop="endTime"  style="padding-left:124px;">
+          <el-form-item prop="endTime" style="padding-left: 124px">
             <el-date-picker
               v-model="filters.endTime"
               type="datetime"
@@ -181,6 +181,7 @@
       :data="pageResult"
       :columns="filterColumns"
       :showEditOperation="false"
+      :showAddToExsitingOperation="false"
       :showDeleteOperation="false"
       :showDetailOperation="true"
       @findPage="findPage"
@@ -440,8 +441,11 @@ export default {
         status: "",
         name: "",
         create_time: "desc",
-        startTime:formatDate(new Date(new Date().setDate(new Date().getDate()-1)), "yyyy-MM-dd hh:mm:ss"),
-        endTime: formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+        startTime: formatDate(
+          new Date(new Date().setDate(new Date().getDate() - 1)),
+          "yyyy-MM-dd hh:mm:ss"
+        ),
+        endTime: formatDate(new Date(), "yyyy-MM-dd hh:mm:ss"),
       },
       dataForm: {
         id: "",
